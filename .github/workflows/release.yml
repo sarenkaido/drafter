@@ -120,21 +120,24 @@ jobs:
           BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           IN=$(find src-tauri/gen/android/app/build/outputs/apk -name '*release-unsigned.apk' | head -1)
           echo "unsigned: $IN"
+          SIGNED=false
           if [ -n "$KS_B64" ]; then
-            echo "$KS_B64" | base64 -d > ks.jks
-            echo "signed=true" >> "$GITHUB_OUTPUT"
+            # tolerate stray spaces/newlines and invisible characters (e.g. RTL marks) from copy-paste
+            printf '%s' "$KS_B64" | LC_ALL=C tr -cd 'A-Za-z0-9+/=' | base64 -d > ks.jks
+            KS_PASS=$(printf '%s' "$KS_PASS" | LC_ALL=C tr -cd '\041-\176')
+            SIGNED=true
           else
             echo "::warning::ANDROID_KEYSTORE secret is missing - signing with a throwaway test key (not published)"
             KS_PASS=testpass123
             keytool -genkeypair -keystore ks.jks -storetype PKCS12 -alias daftar -keyalg RSA -keysize 2048 -validity 10000 \
               -storepass "$KS_PASS" -keypass "$KS_PASS" -dname "CN=Daftar Test"
-            echo "signed=false" >> "$GITHUB_OUTPUT"
           fi
           mkdir out
           "$BT/zipalign" -p -f 4 "$IN" aligned.apk
           "$BT/apksigner" sign --ks ks.jks --ks-key-alias daftar --ks-pass "pass:$KS_PASS" --key-pass "pass:$KS_PASS" --out out/Daftar-Android.apk aligned.apk
-          "$BT/apksigner" verify --print-certs out/Daftar-Android.apk | head -3
+          "$BT/apksigner" verify --print-certs out/Daftar-Android.apk | grep -E "DN|SHA-256"
           rm -f ks.jks
+          echo "signed=$SIGNED" >> "$GITHUB_OUTPUT"
           ls -la out
       - uses: actions/upload-artifact@v4
         with: { name: android, path: out/* }
@@ -201,5 +204,5 @@ jobs:
       - name: Upload files
         run: |
           FILES="dl/windows/* dl/linux/*"
-          if [ "${{ needs.android.outputs.signed }}" = "true" ]; then FILES="$FILES dl/android/*"; else echo "::warning::Android APK not published (no signing key secret)"; fi
+          if [ "${{ needs.android.outputs.signed }}" = "true" ] && ls dl/android/*.apk >/dev/null 2>&1; then FILES="$FILES dl/android/*"; else echo "::warning::Android APK not published (signing key missing or Android build failed)"; fi
           gh release upload "$TAG" $FILES --clobber -R "$GITHUB_REPOSITORY"
