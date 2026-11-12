@@ -24,7 +24,7 @@
 |---|---|---|
 | ویندوز | [نسخه‌ی نصبی](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Windows-Setup.exe) | حدود ۱٫۵ مگ |
 | ویندوز (بدون نصب) | [نسخه‌ی پرتابل](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Windows-Portable.exe) | حدود ۱٫۵ مگ |
-| اندروید | [فایل APK](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Android.apk) | |
+| اندروید | [فایل APK](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Android.apk) | حدود ۱۰ مگ |
 | لینوکس (همه‌ی توزیع‌ها) | [AppImage](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Linux-x86_64.AppImage) | حدود ۸۰ مگ |
 | لینوکس (اوبونتو / دبیان) | [فایل deb](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Linux-amd64.deb) | حدود ۲ مگ |
 

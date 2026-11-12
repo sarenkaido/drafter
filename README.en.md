@@ -24,7 +24,7 @@ See how much money came in and how much went out. That's it.
 |---|---|---|
 | Windows | [Installer](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Windows-Setup.exe) | ~1.5 MB |
 | Windows (no install) | [Portable](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Windows-Portable.exe) | ~1.5 MB |
-| Android | [APK](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Android.apk) | |
+| Android | [APK](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Android.apk) | ~10 MB |
 | Linux (any distro) | [AppImage](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Linux-x86_64.AppImage) | ~80 MB |
 | Linux (Ubuntu / Debian) | [.deb](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Linux-amd64.deb) | ~2 MB |
 
