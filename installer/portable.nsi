@@ -5,7 +5,7 @@ SetCompressor /SOLID lzma
 !include "common.nsh"
 !define APP "Daftar"
 !ifndef VER
-  !define VER "1.0.0"
+  !define VER "1.1.0"
 !endif
 Name "Daftar"
 OutFile "Daftar-Portable-${VER}.exe"

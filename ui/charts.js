@@ -63,6 +63,7 @@
       }
       const n = labels.length;
       const slot = cw / n;
+      const every = Math.max(labelEvery, Math.ceil(26 / slot));
       const groupW = Math.min(slot * 0.72, 46);
       const bw = groupW / series.length;
       // RTL: first label at the right
@@ -81,7 +82,7 @@
           roundRect(ctx, x + 1, padT + ch - bh, Math.max(2, bw - 2), bh, 4);
           ctx.globalAlpha = 1;
         });
-        if (i % labelEvery === 0 || state.hover === i) {
+        if (i % every === 0 || state.hover === i) {
           ctx.fillStyle = state.hover === i ? css('--text') : muted;
           ctx.textAlign = 'center';
           ctx.fillText(labels[i], cx, padT + ch + 16);
@@ -116,7 +117,8 @@
       }
       canvas._geom = { padL, cw, slot, n };
     }
-    canvas.onmousemove = e => {
+    canvas.style.touchAction = 'pan-y';
+    canvas.onpointerdown = canvas.onpointermove = e => {
       const g = canvas._geom; if (!g) return;
       const r = canvas.getBoundingClientRect();
       const x = e.clientX - r.left;
@@ -124,7 +126,7 @@
       const hv = i >= 0 && i < g.n ? i : -1;
       if (hv !== state.hover) { state.hover = hv; draw(); }
     };
-    canvas.onmouseleave = () => { state.hover = -1; draw(); };
+    canvas.onpointerleave = e => { if (e.pointerType === 'mouse') { state.hover = -1; draw(); } };
     draw();
     canvas._redraw = draw;
   }
@@ -161,7 +163,8 @@
       });
       ctx.globalAlpha = 1;
     }
-    canvas.onmousemove = e => {
+    canvas.style.touchAction = 'pan-y';
+    canvas.onpointerdown = canvas.onpointermove = e => {
       if (!canvas._arcs) return;
       const rc = canvas.getBoundingClientRect();
       const x = e.clientX - rc.left - rc.width / 2, y = e.clientY - rc.top - rc.height / 2;
@@ -172,7 +175,7 @@
       if (d > rc.width / 2 - 40 && d < rc.width / 2) hv = canvas._arcs.findIndex(([s, e2]) => ang >= s && ang < e2);
       if (hv !== state.hover) { state.hover = hv; draw(); hoverCb && hoverCb(hv); }
     };
-    canvas.onmouseleave = () => { state.hover = -1; draw(); hoverCb && hoverCb(-1); };
+    canvas.onpointerleave = e => { if (e.pointerType === 'mouse') { state.hover = -1; draw(); hoverCb && hoverCb(-1); } };
     draw();
     canvas._redraw = draw;
   }

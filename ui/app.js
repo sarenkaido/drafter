@@ -142,8 +142,29 @@
       openModal('#confirmModal');
     });
   }
-  function openModal(sel) { $(sel).classList.add('open'); }
-  function closeModal(sel) { $(sel).classList.remove('open'); }
+  // Modals and views use browser history so the Android back button
+  // closes the open sheet first, then returns to the dashboard.
+  const modalStack = [];
+  let skipPop = 0;
+  function openModal(sel) {
+    $(sel).classList.add('open');
+    modalStack.push(sel);
+    history.pushState({ modal: sel }, '');
+  }
+  function closeModal(sel) {
+    $(sel).classList.remove('open');
+    const i = modalStack.lastIndexOf(sel);
+    if (i < 0) return;
+    modalStack.splice(i, 1);
+    skipPop++; history.back();
+  }
+  window.addEventListener('popstate', () => {
+    if (skipPop) { skipPop--; return; }
+    const top = modalStack.pop();
+    if (top) { $(top).classList.remove('open'); return; }
+    if (state.view !== 'dashboard') go('dashboard', true);
+  });
+  if (/Android|iPhone|iPad/i.test(navigator.userAgent)) document.documentElement.classList.add('is-mobile');
   $$('.overlay').forEach(o => {
     o.addEventListener('mousedown', e => { if (e.target === o) closeModal('#' + o.id); });
     o.querySelectorAll('[data-close]').forEach(b => b.onclick = () => closeModal('#' + o.id));
@@ -151,12 +172,17 @@
 
   // ---------- navigation ----------
   const TITLES = { dashboard: 'داشبورد', transactions: 'تراکنش‌ها', categories: 'دسته‌بندی‌ها', reports: 'گزارش سالانه', settings: 'تنظیمات و پشتیبان' };
-  function go(view) {
+  function go(view, fromHistory = false) {
+    if (!fromHistory && view !== state.view) {
+      if (state.view === 'dashboard') history.pushState({ view }, '');
+      else if (view === 'dashboard' && history.state && history.state.view) { skipPop++; history.back(); }
+    }
     state.view = view;
+    $('.main').scrollTop = 0;
     $$('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === view));
     $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
     $('#pageTitle').textContent = TITLES[view];
-    $('#monthNav').style.visibility = ['dashboard', 'transactions', 'categories'].includes(view) ? 'visible' : 'hidden';
+    $('#monthNav').classList.toggle('off', !['dashboard', 'transactions', 'categories'].includes(view));
     render();
   }
   $$('.nav-item').forEach(b => b.onclick = () => go(b.dataset.view));
