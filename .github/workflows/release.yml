@@ -22,7 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.TAG }}
+          # release: build the tagged code; manual run: build the latest main
+          ref: ${{ github.event_name == 'release' && github.event.release.tag_name || github.sha }}
 
       - uses: actions/setup-node@v4
         with:
