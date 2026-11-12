@@ -30,7 +30,7 @@
 | لینوکس (همه‌ی توزیع‌ها) | [AppImage](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Linux-x86_64.AppImage) | حدود ۸۰ مگ |
 | لینوکس (اوبونتو / دبیان) | [فایل deb](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Linux-amd64.deb) | حدود ۲ مگ |
 
-همه‌ی نسخه‌ها: [صفحه‌ی Releases](https://github.com/sarenkaido/drafter/releases)
+همه‌ی نسخه‌ها: [صفحه‌ی Releases](https://github.com/sarenkaido/drafter/releases) · [حمایت از پروژه](#donate)
 
 ## استفاده در ۴ قدم
 
@@ -147,5 +147,72 @@
 ## مجوز
 
 [MIT](LICENSE)
+
+</div>
+
+---
+
+<a id="donate"></a>
+
+<div dir="rtl">
+
+## حمایت از Daftar
+
+Daftar **رایگان**، **متن‌باز** و **بدون تبلیغ** است و همین‌طور هم می‌ماند. هیچ اطلاعاتی از شما جمع نمی‌کند و چیزی هم نمی‌فروشد.
+
+اگر کمک کرده حساب‌وکتابت مرتب‌تر شود و دوست داری قدردانی کنی، هر مبلغی، حتی کوچک، یعنی وقت بیشتر برای نسخه‌های بعدی، امکانات تازه و رفع اشکال‌ها.
+
+</div>
+
+<div align="center" dir="rtl">
+
+| اتریوم و BNB Smart Chain | سولانا | ترون |
+|:---:|:---:|:---:|
+| <img src="docs/donate/evm.png" width="170" alt="Ethereum / BNB address QR"> | <img src="docs/donate/solana.png" width="170" alt="Solana address QR"> | <img src="docs/donate/tron.png" width="170" alt="Tron address QR"> |
+| ETH · BNB · USDT · USDC | SOL · USDT · USDC | TRX · USDT (TRC-20) |
+
+</div>
+
+<div dir="rtl">
+
+**اتریوم (ERC-20) و BNB Smart Chain (BEP-20):**
+
+</div>
+
+```
+0x92D262062d36688261032051b2B9Ae08F3644b89
+```
+
+<div dir="rtl">
+
+**سولانا (Solana):**
+
+</div>
+
+```
+4oWwKYuiEfaTWvTPu3isGSqHtsKydTy5oLD3qo5PRpKR
+```
+
+<div dir="rtl">
+
+**ترون (TRC-20):**
+
+</div>
+
+```
+TCbk4NGW57Wiy6YJXQmx1pPV2hsw1SQndY
+```
+
+<div dir="rtl">
+
+> **مهم:** هر ارز را فقط روی شبکه‌ی خودش بفرست. ارسال روی شبکه‌ی اشتباه برگشت‌پذیر نیست.
+> قبل از ارسال، چند حرف اول و آخر آدرس را با همین صفحه مقایسه کن.
+
+**حمایت بدون هزینه هم ارزشمند است:**
+- به این ریپو **ستاره (Star)** بده تا آدم‌های بیشتری پیدایش کنند.
+- Daftar را به دوستانت معرفی کن.
+- اگر مشکلی دیدی یا ایده‌ای داری، در [Issues](https://github.com/sarenkaido/drafter/issues) بنویس.
+
+از اینکه Daftar را انتخاب کردی ممنونیم.
 
 </div>

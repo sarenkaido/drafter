@@ -29,7 +29,7 @@ English and Persian · Gregorian and Persian calendars
 | Linux (any distro) | [AppImage](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Linux-x86_64.AppImage) | ~80 MB |
 | Linux (Ubuntu / Debian) | [.deb](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Linux-amd64.deb) | ~2 MB |
 
-All versions: [Releases page](https://github.com/sarenkaido/drafter/releases)
+All versions: [Releases page](https://github.com/sarenkaido/drafter/releases) · [Support the project](#support-daftar)
 
 ## Use it in 4 steps
 
@@ -165,3 +165,48 @@ Building locally, Android and signing are covered in [docs/BUILD.md](docs/BUILD.
 ## License
 
 [MIT](LICENSE)
+
+---
+
+## Support Daftar
+
+Daftar is **free**, **open source** and **ad-free**, and it will stay that way. It collects nothing about you and sells nothing.
+
+If it has made your money a little easier to keep track of and you'd like to say thanks, any amount helps, however small. It buys time for new versions, new features and bug fixes.
+
+<div align="center">
+
+| Ethereum & BNB Smart Chain | Solana | Tron |
+|:---:|:---:|:---:|
+| <img src="docs/donate/evm.png" width="170" alt="Ethereum / BNB address QR"> | <img src="docs/donate/solana.png" width="170" alt="Solana address QR"> | <img src="docs/donate/tron.png" width="170" alt="Tron address QR"> |
+| ETH · BNB · USDT · USDC | SOL · USDT · USDC | TRX · USDT (TRC-20) |
+
+</div>
+
+**Ethereum (ERC-20) and BNB Smart Chain (BEP-20):**
+
+```
+0x92D262062d36688261032051b2B9Ae08F3644b89
+```
+
+**Solana:**
+
+```
+4oWwKYuiEfaTWvTPu3isGSqHtsKydTy5oLD3qo5PRpKR
+```
+
+**Tron (TRC-20):**
+
+```
+TCbk4NGW57Wiy6YJXQmx1pPV2hsw1SQndY
+```
+
+> **Important:** send each coin only on its own network. Transfers on the wrong network can't be reversed.
+> Before sending, compare the first and last few characters of the address with this page.
+
+**Free ways to help are just as welcome:**
+- **Star** this repository so more people can find it.
+- Tell a friend about Daftar.
+- Found a bug or have an idea? Open an [issue](https://github.com/sarenkaido/drafter/issues).
+
+Thank you for choosing Daftar.
