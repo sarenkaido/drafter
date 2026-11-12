@@ -10,11 +10,13 @@
 
 See how much money came in and how much went out. That's it.
 
-<img src="docs/screenshot-dark.png" alt="Daftar on desktop" height="360">&nbsp;&nbsp;<img src="docs/screenshot-mobile.png" alt="Daftar on Android" height="360">
+English and Persian · Gregorian and Persian calendars
+
+<img src="docs/screenshot-en.png" alt="Daftar on desktop" height="360">&nbsp;&nbsp;<img src="docs/screenshot-mobile-en.png" alt="Daftar on Android" height="360">
 
 </div>
 
-> The app's interface is in Persian (Farsi) and uses the Persian (Jalali) calendar.
+> The app opens in Persian. To switch to English, click **EN** at the bottom of the sidebar on a computer, or open the **Settings** tab (gear icon) → **Language · زبان** on a phone.
 
 ---
 
@@ -57,17 +59,19 @@ Open the APK file and tap **Install**.
   `sudo apt install ./Daftar-Linux-amd64.deb`
 
 ### 3. Write it down
-- Tap the purple **"+"** button (on a computer: **"+ تراکنش جدید"**, New transaction).
-- Pick **هزینه** (expense, red) or **درآمد** (income, green).
+- Switch to English if you like (see the note at the top).
+- Tap the purple **"+"** button (on a computer: **"+ New transaction"**).
+- Pick **Expense** (red) or **Income** (green).
 - Type the **amount**.
 - Pick a **category**, for example Groceries.
-- Tap **ذخیره** (Save). Done!
+- Tap **Save**. Done!
 
 ---
 
 ## What it does
 
-- Log daily income and expenses with a **Persian (Jalali) calendar**
+- Log daily income and expenses
+- **English** and **Persian**, with the **Gregorian** or **Persian (Jalali)** calendar
 - **Categories** with your own icons and colors
 - Daily and monthly **charts**, plus a yearly report
 - **Search** and filter your transactions
@@ -88,12 +92,16 @@ Open the APK file and tap **Install**.
 
 ## FAQ
 
+**How do I change the language or the calendar?**
+On a computer, click **EN** / **فا** at the bottom of the sidebar. On a phone, go to **Settings → Language · زبان**.
+The calendar follows the language (English: Gregorian, Persian: Jalali). To use the other calendar, change **Settings → Calendar**.
+
 **Where is my data saved?**
-Only on your own device. On a computer, **Settings → Open folder** (تنظیمات ← باز کردن پوشه) shows the folder.
+Only on your own device. On a computer, **Settings → Open folder** shows the folder.
 
 **How do I move my data to another device (for example, from a laptop to a phone)?**
-On the old device, go to **Settings → Full backup export** (تنظیمات ← خروجی پشتیبان کامل).
-Send the file to the new device and use **Settings → Import from file** (تنظیمات ← ورود از فایل).
+On the old device, go to **Settings → Full backup export**.
+Send the file to the new device and use **Settings → Import from file**.
 This works between Windows, Android and Linux too.
 
 **A new version is out. Will I lose my data?**
@@ -124,6 +132,7 @@ Built with [Tauri 2](https://tauri.app) (Rust) and plain HTML/CSS/JS. There's no
 
 ```
 ui/          the app UI (HTML, CSS, JS, font), responsive for phones
+             i18n.js holds all English and Persian text, calendar.js the calendars
 src-tauri/   Rust backend: saves data, file dialogs, backups
 installer/   NSIS scripts for the Windows setup and portable .exe
 scripts/     cargo config for cross-compiling Windows builds from Linux

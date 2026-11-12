@@ -38,14 +38,15 @@
   }
 
   // Grouped bars: series = [{values, color}], labels = [], fmt = number formatter
-  function bars(canvas, { labels, series, fmtAxis, fmtTip, tipTitle, labelEvery = 1 }) {
+  function bars(canvas, { labels, series, fmtAxis, fmtTip, tipTitle, labelEvery = 1, rtl = true }) {
     const state = { hover: -1 };
     function draw() {
       const { ctx, w, h } = setup(canvas);
       const font = css('--font');
       const muted = css('--muted');
       const grid = css('--grid');
-      const padL = 12, padR = 64, padT = 14, padB = 30;
+      // value labels sit on the right in RTL and on the left in LTR
+      const padL = rtl ? 12 : 64, padR = rtl ? 64 : 12, padT = 14, padB = 30;
       const cw = w - padL - padR, ch = h - padT - padB;
       const maxV = niceMax(Math.max(1, ...series.flatMap(s => s.values)));
       ctx.clearRect(0, 0, w, h);
@@ -58,17 +59,18 @@
         ctx.setLineDash(i === 0 ? [] : [3, 4]);
         ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + cw, y); ctx.stroke();
         ctx.setLineDash([]);
-        ctx.fillStyle = muted; ctx.textAlign = 'left';
-        ctx.fillText(fmtAxis((maxV * i) / 4), padL + cw + 8, y);
+        ctx.fillStyle = muted; ctx.textAlign = rtl ? 'left' : 'right';
+        ctx.fillText(fmtAxis((maxV * i) / 4), rtl ? padL + cw + 8 : padL - 8, y);
       }
       const n = labels.length;
       const slot = cw / n;
       const every = Math.max(labelEvery, Math.ceil(26 / slot));
       const groupW = Math.min(slot * 0.72, 46);
       const bw = groupW / series.length;
-      // RTL: first label at the right
+      // RTL: first label at the right; LTR: first label at the left
+      const cxOf = i => rtl ? padL + cw - slot * (i + 0.5) : padL + slot * (i + 0.5);
       for (let i = 0; i < n; i++) {
-        const cx = padL + cw - slot * (i + 0.5);
+        const cx = cxOf(i);
         if (state.hover === i) {
           ctx.fillStyle = css('--hover');
           roundRect(ctx, cx - slot / 2 + 1, padT, slot - 2, ch, 6);
@@ -76,7 +78,7 @@
         series.forEach((s, si) => {
           const v = s.values[i];
           const bh = (v / maxV) * ch;
-          const x = cx + groupW / 2 - bw * (si + 1);
+          const x = rtl ? cx + groupW / 2 - bw * (si + 1) : cx - groupW / 2 + bw * si;
           ctx.fillStyle = s.color;
           ctx.globalAlpha = state.hover === -1 || state.hover === i ? 1 : 0.45;
           roundRect(ctx, x + 1, padT + ch - bh, Math.max(2, bw - 2), bh, 4);
@@ -96,33 +98,33 @@
         ctx.font = `600 12px ${font}`;
         const tw = Math.max(ctx.measureText(title).width, ...lines.map(l => ctx.measureText(l.text).width + 16)) + 24;
         const th = 26 + lines.length * 20;
-        let tx = padL + cw - slot * (i + 0.5) - tw / 2;
+        let tx = cxOf(i) - tw / 2;
         tx = Math.max(4, Math.min(w - tw - 4, tx));
         const ty = padT + 4;
         ctx.fillStyle = css('--tip-bg');
         ctx.shadowColor = 'rgba(0,0,0,.25)'; ctx.shadowBlur = 16;
         ctx.beginPath(); ctx.roundRect(tx, ty, tw, th, 10); ctx.fill();
         ctx.shadowBlur = 0;
-        ctx.textAlign = 'right';
+        ctx.textAlign = rtl ? 'right' : 'left';
         ctx.fillStyle = css('--text');
-        ctx.fillText(title, tx + tw - 12, ty + 15);
+        ctx.fillText(title, rtl ? tx + tw - 12 : tx + 12, ty + 15);
         ctx.font = `12px ${font}`;
         lines.forEach((l, k) => {
           const y = ty + 36 + k * 20;
           ctx.fillStyle = l.color;
-          ctx.beginPath(); ctx.arc(tx + tw - 16, y, 4, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(rtl ? tx + tw - 16 : tx + 16, y, 4, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = css('--text');
-          ctx.fillText(l.text, tx + tw - 26, y);
+          ctx.fillText(l.text, rtl ? tx + tw - 26 : tx + 26, y);
         });
       }
-      canvas._geom = { padL, cw, slot, n };
+      canvas._geom = { padL, cw, slot, n, rtl };
     }
     canvas.style.touchAction = 'pan-y';
     canvas.onpointerdown = canvas.onpointermove = e => {
       const g = canvas._geom; if (!g) return;
       const r = canvas.getBoundingClientRect();
       const x = e.clientX - r.left;
-      const i = Math.floor((g.padL + g.cw - x) / g.slot);
+      const i = Math.floor((g.rtl ? g.padL + g.cw - x : x - g.padL) / g.slot);
       const hv = i >= 0 && i < g.n ? i : -1;
       if (hv !== state.hover) { state.hover = hv; draw(); }
     };
