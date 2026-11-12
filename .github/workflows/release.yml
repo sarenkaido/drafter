@@ -135,7 +135,7 @@ jobs:
           fi
           mkdir out
           "$BT/zipalign" -p -f 4 "$IN" aligned.apk
-          "$BT/apksigner" sign --ks ks.jks --ks-key-alias daftar --ks-pass "pass:$KS_PASS" --key-pass "pass:$KS_PASS" --out out/Daftar-Android.apk aligned.apk
+          "$BT/apksigner" sign --v4-signing-enabled false --ks ks.jks --ks-key-alias daftar --ks-pass "pass:$KS_PASS" --key-pass "pass:$KS_PASS" --out out/Daftar-Android.apk aligned.apk
           "$BT/apksigner" verify --print-certs out/Daftar-Android.apk | grep -E "DN|SHA-256"
           rm -f ks.jks
           echo "signed=$SIGNED" >> "$GITHUB_OUTPUT"
@@ -205,5 +205,5 @@ jobs:
       - name: Upload files
         run: |
           FILES="dl/windows/* dl/linux/*"
-          if [ "${{ needs.android.outputs.signed }}" = "true" ] && ls dl/android/*.apk >/dev/null 2>&1; then FILES="$FILES dl/android/*"; else echo "::warning::Android APK not published (signing key missing or Android build failed)"; fi
+          if [ "${{ needs.android.outputs.signed }}" = "true" ] && ls dl/android/*.apk >/dev/null 2>&1; then FILES="$FILES dl/android/*.apk"; else echo "::warning::Android APK not published (signing key missing or Android build failed)"; fi
           gh release upload "$TAG" $FILES --clobber -R "$GITHUB_REPOSITORY"
