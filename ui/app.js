@@ -31,14 +31,77 @@
   const faDigits = s => String(s).replace(/\d/g, d => FA[d]);
   const dg = s => (isFa() ? faDigits(s) : String(s));          // digits in the current language
   const toEn = s => String(s).replace(/[۰-۹]/g, c => FA.indexOf(c)).replace(/[٠-٩]/g, c => '٠١٢٣٤٥٦٧٨٩'.indexOf(c));
-  let nf = new Intl.NumberFormat('fa-IR');
-  const num = n => nf.format(Math.round(n));
+  const locale = () => (isFa() ? 'fa-IR' : 'en-US');
+  const roundTo = (n, d) => Math.round(n * 10 ** d) / 10 ** d;
+  // amounts: whole numbers for toman/rial/yen..., cents only when there are cents
+  const decs = () => curInfo().dec;
+  const fmtNum = (n, d = decs()) => {
+    const r = roundTo(n, d);
+    return new Intl.NumberFormat(locale(), { minimumFractionDigits: d && !Number.isInteger(r) ? d : 0, maximumFractionDigits: d }).format(r);
+  };
+  const num = n => fmtNum(n);
   const pct = n => dg(n) + t('pct');
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const unit = () => { const c = state.data.settings.currency; return c ? t('cur.' + c) : ''; };
-  const money = (n, withUnit = true) => num(n) + (withUnit && unit() ? ' ' + unit() : '');
-  const moneyHTML = n => `${num(n)}${unit() ? `<small>${unit()}</small>` : ''}`;
+  // ---------- currencies ----------
+  // toman/rial are shown as words after the number; ISO currencies use the locale's symbol and placement
+  const CURRENCIES = {
+    local: [['toman', 0], ['rial', 0]],
+    world: [['USD', 2], ['EUR', 2], ['GBP', 2], ['AED', 2], ['TRY', 2], ['CAD', 2], ['AUD', 2], ['CHF', 2], ['SEK', 2], ['NOK', 2],
+      ['DKK', 2], ['JPY', 0], ['CNY', 2], ['INR', 2], ['RUB', 2], ['SAR', 2], ['QAR', 2], ['KWD', 3], ['IQD', 0], ['AFN', 2], ['AMD', 2], ['GEL', 2]],
+  };
+  const CUR_DEC = Object.fromEntries([...CURRENCIES.local, ...CURRENCIES.world]);
+  const isIso = c => /^[A-Z]{3}$/.test(c);
+  function curInfo() {
+    const s = state.data.settings, c = s.currency;
+    if (c === 'custom') return { code: c, dec: 2, label: s.currencyLabel || '' };
+    if (c === 'toman' || c === 'rial') return { code: c, dec: 0, label: t('cur.' + c) };
+    if (isIso(c)) {
+      let label = c;
+      try { label = new Intl.NumberFormat(locale(), { style: 'currency', currency: c, currencyDisplay: 'narrowSymbol' }).formatToParts(0).find(p => p.type === 'currency').value; } catch (e) { /* unknown code */ }
+      return { code: c, dec: CUR_DEC[c] ?? 2, label };
+    }
+    return { code: '', dec: 0, label: '' };
+  }
+  const curName = c => {
+    if (c === 'toman' || c === 'rial' || c === 'custom') return t('cur.' + c);
+    if (!c) return t('cur.none');
+    try { return `${new Intl.DisplayNames([locale()], { type: 'currency' }).of(c)} (${c})`; } catch (e) { return c; }
+  };
+  const unit = () => curInfo().label;
+  function moneyParts(n) {
+    const ci = curInfo();
+    if (isIso(ci.code)) {
+      try {
+        const r = roundTo(n, ci.dec);
+        return new Intl.NumberFormat(locale(), { style: 'currency', currency: ci.code, currencyDisplay: 'narrowSymbol', minimumFractionDigits: ci.dec && !Number.isInteger(r) ? ci.dec : 0, maximumFractionDigits: ci.dec }).formatToParts(r);
+      } catch (e) { /* fall through */ }
+    }
+    const parts = [{ type: 'number', value: num(n) }];
+    if (ci.label) parts.push({ type: 'literal', value: ' ' }, { type: 'currency', value: ci.label });
+    return parts;
+  }
+  const money = (n, withUnit = true) => (withUnit ? moneyParts(n).map(p => p.value).join('') : num(n));
+  const moneyHTML = n => moneyParts(n).map(p => (p.type === 'currency' ? `<small>${esc(p.value)}</small>` : esc(p.value))).join('');
+  function fillCurrencySelect(sel, value) {
+    const opt = c => `<option value="${c}" ${c === value ? 'selected' : ''}>${esc(curName(c))}</option>`;
+    sel.innerHTML = `<optgroup label="${esc(t('cur.groupLocal'))}">${CURRENCIES.local.map(([c]) => opt(c)).join('')}</optgroup>`
+      + `<optgroup label="${esc(t('cur.groupWorld'))}">${CURRENCIES.world.map(([c]) => opt(c)).join('')}</optgroup>`
+      + `<optgroup label="—">${opt('custom')}${opt('')}</optgroup>`;
+  }
+  function bindCurrencyPicker(selId, inputId, onChange) {
+    const sel = $(selId), inp = $(inputId);
+    const sync = () => {
+      const s = state.data.settings;
+      fillCurrencySelect(sel, s.currency);
+      inp.classList.toggle('show', s.currency === 'custom');
+      inp.value = s.currencyLabel || '';
+    };
+    sel.onchange = () => { state.data.settings.currency = sel.value; inp.classList.toggle('show', sel.value === 'custom'); if (sel.value === 'custom') inp.focus(); onChange(); };
+    inp.oninput = () => { state.data.settings.currencyLabel = cleanLabel(inp.value); onChange(); };
+    return sync;
+  }
+  const cleanLabel = v => String(v ?? '').replace(/[<>&"'`]/g, '').trim().slice(0, 10);
   const compact = n => {
     const a = Math.abs(n);
     if (isFa()) {
@@ -113,9 +176,10 @@
     ['salary', 'income', '💼', '#2fd189'], ['freelance', 'income', '💻', '#5b9dff'], ['sales', 'income', '🛍️', '#ffb547'],
     ['invest', 'income', '📈', '#7c6cff'], ['gift', 'income', '🎁', '#ef6cd5'], ['other', 'income', '✨', '#a3a9b8'],
   ];
+  const systemLang = () => ((navigator.languages || [navigator.language || '']).some(l => /^fa\b|^fa-/i.test(l)) ? 'fa' : 'en');
   const defaultData = () => ({
     version: 1,
-    settings: { currency: 'toman', theme: 'dark', lang: 'fa', calendar: 'jalali' },
+    settings: (() => { const l = systemLang(); return { currency: l === 'fa' ? 'toman' : 'USD', currencyLabel: '', theme: 'dark', lang: l, calendar: l === 'fa' ? 'jalali' : 'gregorian', onboarded: false }; })(),
     categories: DEFAULTS.map(([key, type, icon, color]) => ({ id: uid(), key, name: DEFAULT_CATS[key].fa, type, icon, color })),
     transactions: [],
   });
@@ -126,12 +190,58 @@
     if (s.currency === 'ریال') s.currency = 'rial';
     if (!s.lang) s.lang = 'fa';
     if (!s.calendar) s.calendar = s.lang === 'en' ? 'gregorian' : 'jalali';
+    if (s.onboarded === undefined) s.onboarded = true;   // existing users skip the welcome screen
     d.categories.forEach(c => {
       if (c.key) return;
       const key = Object.keys(DEFAULT_CATS).find(k => DEFAULT_CATS[k].fa === c.name || DEFAULT_CATS[k].en === c.name);
       if (key) c.key = key;
     });
     return d;
+  }
+
+  // Everything loaded from disk or imported from a file is validated here, so a
+  // damaged or crafted backup can't break the app or inject markup.
+  const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+  const SAFE_ID = /^[A-Za-z0-9_-]{1,64}$/;
+  const HEX = /^#[0-9a-fA-F]{6}$/;
+  const cleanIcon = v => (typeof v === 'string' && v.length <= 12 && !/[<>&"'`]/.test(v) && v.trim() ? v : '✨');
+  function cleanData(d) {
+    if (!d || typeof d !== 'object' || !Array.isArray(d.categories) || !Array.isArray(d.transactions)) return null;
+    const s = d.settings && typeof d.settings === 'object' ? d.settings : {};
+    const cur = String(s.currency ?? 'toman');
+    const settings = {
+      currency: ['toman', 'rial', 'custom', ''].includes(cur) || isIso(cur) ? cur : cur === 'تومان' ? 'toman' : cur === 'ریال' ? 'rial' : 'toman',
+      currencyLabel: cleanLabel(s.currencyLabel),
+      theme: s.theme === 'light' ? 'light' : 'dark',
+      lang: s.lang === 'en' ? 'en' : s.lang === 'fa' ? 'fa' : undefined,
+      calendar: s.calendar === 'gregorian' ? 'gregorian' : s.calendar === 'jalali' ? 'jalali' : undefined,
+      onboarded: typeof s.onboarded === 'boolean' ? s.onboarded : undefined,
+    };
+    const ids = new Set();
+    const categories = [];
+    for (const c of d.categories) {
+      if (!c || typeof c !== 'object' || !SAFE_ID.test(String(c.id)) || ids.has(String(c.id))) continue;
+      ids.add(String(c.id));
+      const cat = { id: String(c.id), name: String(c.name ?? '').slice(0, 40), type: c.type === 'income' ? 'income' : 'expense', icon: cleanIcon(c.icon), color: HEX.test(c.color) ? c.color : '#a3a9b8' };
+      if (typeof c.key === 'string' && DEFAULT_CATS[c.key]) cat.key = c.key;
+      categories.push(cat);
+    }
+    const txIds = new Set();
+    const transactions = [];
+    for (const x of d.transactions) {
+      if (!x || typeof x !== 'object' || !SAFE_ID.test(String(x.id)) || txIds.has(String(x.id))) continue;
+      const amount = Number(x.amount);
+      if (!Number.isFinite(amount) || amount <= 0 || amount > 1e15) continue;
+      if (typeof x.date !== 'string' || !ISO_DATE.test(x.date) || isNaN(Date.parse(x.date))) continue;
+      txIds.add(String(x.id));
+      transactions.push({
+        id: String(x.id), type: x.type === 'income' ? 'income' : 'expense', amount, date: x.date,
+        categoryId: SAFE_ID.test(String(x.categoryId)) ? String(x.categoryId) : '',
+        note: String(x.note ?? '').slice(0, 200),
+        createdAt: Number.isFinite(Number(x.createdAt)) ? Number(x.createdAt) : 0,
+      });
+    }
+    return { version: 1, settings, categories, transactions };
   }
 
   // ---------- state ----------
@@ -216,7 +326,6 @@
     const s = state.data.settings;
     lang = s.lang === 'en' ? 'en' : 'fa';
     Cal.set(s.calendar, lang);
-    nf = new Intl.NumberFormat(isFa() ? 'fa-IR' : 'en-US');
     const root = document.documentElement;
     root.lang = lang;
     root.dir = isFa() ? 'rtl' : 'ltr';
@@ -230,8 +339,7 @@
     const s = state.data.settings;
     if (s.lang === l) return;
     s.lang = l;
-    s.calendar = l === 'en' ? 'gregorian' : 'jalali';   // each language starts with its usual calendar
-    applyLang(); resetToToday(); persist(); go(state.view, true);
+    applyLang(); persist(); go(state.view, true);
   }
   function setCalendar(c) {
     state.data.settings.calendar = c;
@@ -488,7 +596,7 @@
     const s = state.data.settings;
     $$('#sLang button').forEach(b => b.classList.toggle('on', b.dataset.v === s.lang));
     $$('#sCal button').forEach(b => b.classList.toggle('on', b.dataset.v === s.calendar));
-    $$('#sCurrency button').forEach(b => b.classList.toggle('on', b.dataset.v === s.currency));
+    syncSettingsCurrency();
     $$('#sTheme button').forEach(b => b.classList.toggle('on', b.dataset.v === s.theme));
     const tx = state.data.transactions;
     const dates = tx.map(x => x.date).sort();
@@ -498,7 +606,7 @@
   }
   $$('#sLang button').forEach(b => b.onclick = () => setLang(b.dataset.v));
   $$('#sCal button').forEach(b => b.onclick = () => setCalendar(b.dataset.v));
-  $$('#sCurrency button').forEach(b => b.onclick = () => { state.data.settings.currency = b.dataset.v; persist(); render(); });
+  const syncSettingsCurrency = bindCurrencyPicker('#sCurrency', '#sCurCustom', () => { persist(); render(); });
   $$('#sTheme button').forEach(b => b.onclick = () => { state.data.settings.theme = b.dataset.v; applyTheme(); persist(); render(); });
   $('#openFolder').onclick = () => api.openDataFolder();
   $('#wipeBtn').onclick = async () => {
@@ -576,12 +684,19 @@
   document.addEventListener('mousedown', e => { if (!e.target.closest('.date-field')) $('#datepicker').classList.remove('open'); });
 
   const amountInput = $('#txAmount');
-  function parseAmount() { return +toEn(amountInput.value).replace(/[^\d]/g, '') || 0; }
-  const amountWords = n => { const w = words(n); return w ? `${w} ${unit()}`.trim() : ''; };
+  // accepts Persian/Arabic digits and either decimal sign (. or ٫); grouping marks are ignored
+  function splitAmount(v) {
+    const raw = toEn(v).replace(/[٫]/g, '.').replace(/[^\d.]/g, '');
+    const [i = '', ...rest] = raw.split('.');
+    return { int: i.replace(/^0+(?=\d)/, ''), frac: decs() ? rest.join('').slice(0, decs()) : '', dot: decs() > 0 && rest.length > 0 };
+  }
+  function parseAmount() { const p = splitAmount(amountInput.value); return +(`${p.int || 0}.${p.frac || 0}`) || 0; }
+  const amountWords = n => (decs() ? '' : (() => { const w = words(n); return w ? `${w} ${unit()}`.trim() : ''; })());
   amountInput.addEventListener('input', () => {
-    const n = parseAmount();
-    amountInput.value = n ? num(n) : '';
-    $('#txWords').textContent = amountWords(n);
+    const p = splitAmount(amountInput.value);
+    const sep = isFa() ? '٫' : '.';
+    amountInput.value = p.int || p.dot ? fmtNum(+p.int || 0, 0) + (p.dot ? sep + dg(p.frac) : '') : '';
+    $('#txWords').textContent = amountWords(parseAmount());
   });
 
   function openTxModal(tx) {
@@ -589,6 +704,7 @@
     $('#txModalTitle').textContent = t(tx ? 'tx.edit' : 'tx.new');
     $('#txDelete').style.display = tx ? '' : 'none';
     $('#txUnit').textContent = unit();
+    amountInput.inputMode = decs() ? 'decimal' : 'numeric';
     tm.cat = tx ? tx.categoryId : null;
     setTxType(tx ? tx.type : (tm.lastType || 'expense'));
     // default date: today, or the 1st of the viewed month if viewing another month
@@ -729,13 +845,13 @@
     let added = 0, skipped = 0, newCats = 0;
     for (const r of rows.slice(1)) {
       const date = J.parse(r[ci.date] || '');
-      let amt = +toEn(r[ci.amount] || '').replace(/[^\d.\-]/g, '');
-      if (!date || !amt) { skipped++; continue; }
+      let amt = +toEn(r[ci.amount] || '').replace(/[٫]/g, '.').replace(/[^\d.\-]/g, '');
+      if (!date || !Number.isFinite(amt) || !amt || Math.abs(amt) > 1e15) { skipped++; continue; }
       const tv = ci.type >= 0 ? (r[ci.type] || '').trim().toLowerCase() : '';
       let type = /درآمد|income|دریافت|واریز/.test(tv) ? 'income' : 'expense';
       if (ci.type < 0 && amt > 0) type = 'income';
       amt = Math.abs(amt);
-      const cname = (ci.cat >= 0 ? r[ci.cat] : '').trim();
+      const cname = (ci.cat >= 0 ? r[ci.cat] : '').trim().slice(0, 40);
       // match custom names, or a built-in category in either language
       let cat = cname
         ? state.data.categories.find(c => c.type === type && (c.name === cname || (c.key && DEFAULT_CATS[c.key] && (DEFAULT_CATS[c.key].fa === cname || DEFAULT_CATS[c.key].en === cname))))
@@ -744,7 +860,7 @@
         cat = { id: uid(), name: cname || DEFAULT_CATS.other[lang], type, icon: '✨', color: PALETTE[state.data.categories.length % PALETTE.length] };
         state.data.categories.push(cat); newCats++;
       }
-      state.data.transactions.push({ id: uid(), createdAt: Date.now(), type, amount: amt, categoryId: cat.id, date, note: ci.note >= 0 ? (r[ci.note] || '').trim() : '' });
+      state.data.transactions.push({ id: uid(), createdAt: Date.now(), type, amount: amt, categoryId: cat.id, date, note: ci.note >= 0 ? (r[ci.note] || '').trim().slice(0, 200) : '' });
       added++;
     }
     return { added, skipped, newCats };
@@ -755,16 +871,15 @@
     if (!f.ok) return;
     try {
       if (f.ext === '.json') {
-        const d = JSON.parse(f.content);
-        if (!Array.isArray(d.transactions) || !Array.isArray(d.categories)) throw new Error(t('badBackup'));
+        const d = cleanData(JSON.parse(f.content));
+        if (!d) throw new Error(t('badBackup'));
         const mode = await confirmBox(t('impTitle'), t('impText', dg(d.transactions.length), f.name), [
           { label: t('cancel'), value: null }, { label: t('merge'), value: 'merge' }, { label: t('replace'), value: 'replace', cls: 'danger' }]);
         if (!mode) return;
         migrate(d);
         if (mode === 'replace') {
-          // keep this device's language and calendar
-          const { lang: l, calendar } = state.data.settings;
-          state.data = { version: 1, settings: { ...state.data.settings, ...d.settings, lang: l, calendar }, categories: d.categories, transactions: d.transactions };
+          // keep this device's language, calendar and currency choices
+          state.data = { version: 1, settings: { ...state.data.settings, theme: d.settings.theme }, categories: d.categories, transactions: d.transactions };
         } else {
           const cats = new Set(state.data.categories.map(c => c.id));
           d.categories.forEach(c => { if (!cats.has(c.id)) state.data.categories.push(c); });
@@ -784,6 +899,19 @@
     }
   };
 
+  // ---------- first-run welcome ----------
+  function syncWelcome() {
+    const s = state.data.settings;
+    $$('#wLang button').forEach(b => b.classList.toggle('on', b.dataset.v === s.lang));
+    $$('#wCal button').forEach(b => b.classList.toggle('on', b.dataset.v === s.calendar));
+    syncWelcomeCurrency();
+  }
+  const syncWelcomeCurrency = bindCurrencyPicker('#wCurrency', '#wCurCustom', () => { persist(); render(); });
+  $$('#wLang button').forEach(b => b.onclick = () => { setLang(b.dataset.v); syncWelcome(); });
+  $$('#wCal button').forEach(b => b.onclick = () => { setCalendar(b.dataset.v); syncWelcome(); });
+  $('#wStart').onclick = () => { state.data.settings.onboarded = true; persist(); closeModal('#welcomeModal'); render(); };
+  function showWelcome() { syncWelcome(); openModal('#welcomeModal'); }
+
   document.addEventListener('click', e => { if (e.target.closest('.js-add')) openTxModal(); });
 
   // ---------- keyboard ----------
@@ -796,12 +924,12 @@
 
   // ---------- boot ----------
   (async () => {
-    let d = await api.load();
-    if (!d || !Array.isArray(d.transactions)) { d = defaultData(); await api.save(d); }
+    let d = cleanData(await api.load().catch(() => null));
+    if (!d) { d = defaultData(); await api.save(d); }
     state.data = migrate(d);
     applyLang();
     applyTheme();
     resetToToday();
-    document.fonts.ready.then(() => go('dashboard'));
+    document.fonts.ready.then(() => { go('dashboard'); if (!state.data.settings.onboarded) showWelcome(); });
   })();
 })();

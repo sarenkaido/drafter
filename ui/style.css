@@ -505,3 +505,27 @@ select {
 [dir="ltr"] .type-switch[data-type="income"] .glider { transform: translateX(100%); }
 [dir="ltr"] .amount-box input { text-align: left; }
 .lang-btn { font-weight: 700; font-size: 12px; width: auto; min-width: 44px; padding: 0 10px; }
+
+/* ---------- currency picker & welcome ---------- */
+.cur-pick { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.cur-pick select { min-width: 200px; max-width: 100%; }
+.cur-custom {
+  height: 42px; width: 120px; padding: 0 12px; border-radius: 12px; background: var(--surface-2);
+  border: 1px solid var(--border); outline: none; display: none;
+}
+.cur-custom.show { display: block; }
+.cur-custom:focus { border-color: var(--accent); }
+.welcome { text-align: center; }
+.welcome h2 { margin: 6px 0 4px; font-size: 20px; }
+.welcome p { margin: 0 0 6px; font-size: 13px; line-height: 1.8; }
+.welcome .field { text-align: start; }
+.welcome-logo {
+  width: 56px; height: 56px; margin: 4px auto 6px; border-radius: 17px; display: grid; place-items: center; color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 12px 28px -10px var(--accent);
+}
+.welcome-logo svg { width: 28px; height: 28px; }
+.seg.wide { display: flex; width: 100%; }
+.seg.wide button { flex: 1; }
+.welcome .cur-pick { justify-content: stretch; }
+.welcome .cur-pick select { flex: 1; }
+.btn.wide { flex: 1; justify-content: center; }

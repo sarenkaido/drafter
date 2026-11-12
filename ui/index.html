@@ -196,7 +196,7 @@
             </div>
             <div class="setting">
               <div><div class="s-title" data-i18n="set.currency"></div><div class="muted small" data-i18n="set.currencyHint"></div></div>
-              <div class="seg" id="sCurrency"><button data-v="toman" data-i18n="cur.toman"></button><button data-v="rial" data-i18n="cur.rial"></button><button data-v="" data-i18n="cur.none"></button></div>
+              <div class="cur-pick"><select id="sCurrency"></select><input id="sCurCustom" class="cur-custom" maxlength="10" data-i18n-ph="cur.customPh" /></div>
             </div>
             <div class="setting">
               <div><div class="s-title" data-i18n="set.theme"></div><div class="muted small" data-i18n="set.themeHint"></div></div>
@@ -294,6 +294,22 @@
         <button class="btn soft" data-close data-i18n="cancel"></button>
         <button class="btn primary" id="catSave" data-i18n="save"></button>
       </div>
+    </div>
+  </div>
+
+  <!-- First-run welcome -->
+  <div class="overlay" id="welcomeModal">
+    <div class="modal small-modal welcome">
+      <div class="welcome-logo"><svg viewBox="0 0 24 24"><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z"/><path d="M8 14l3-3 2 2 3-4"/></svg></div>
+      <h2 data-i18n="welcome.title"></h2>
+      <p class="muted" data-i18n="welcome.text"></p>
+      <div class="field"><label>زبان · Language</label>
+        <div class="seg wide" id="wLang"><button data-v="fa">فارسی</button><button data-v="en">English</button></div></div>
+      <div class="field"><label data-i18n="set.cal"></label>
+        <div class="seg wide" id="wCal"><button data-v="jalali" data-i18n="cal.jalali"></button><button data-v="gregorian" data-i18n="cal.gregorian"></button></div></div>
+      <div class="field"><label data-i18n="set.currency"></label>
+        <div class="cur-pick"><select id="wCurrency"></select><input id="wCurCustom" class="cur-custom" maxlength="10" data-i18n-ph="cur.customPh" /></div></div>
+      <div class="modal-foot"><button class="btn primary wide" id="wStart" data-i18n="welcome.start"></button></div>
     </div>
   </div>
 

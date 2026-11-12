@@ -9,7 +9,7 @@ SetCompressor /SOLID lzma
 !define APPFA "Daftar"
 !define OLDFA "دفتر دخل و خرج"
 !ifndef VER
-  !define VER "1.2.0"
+  !define VER "1.3.0"
 !endif
 !define UNKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP}"
 

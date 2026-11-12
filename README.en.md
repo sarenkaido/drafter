@@ -16,7 +16,6 @@ English and Persian · Gregorian and Persian calendars
 
 </div>
 
-> The app opens in Persian. To switch to English, click **EN** at the bottom of the sidebar on a computer, or open the **Settings** tab (gear icon) → **Language · زبان** on a phone.
 
 ---
 
@@ -32,7 +31,7 @@ English and Persian · Gregorian and Persian calendars
 
 All versions: [Releases page](https://github.com/sarenkaido/drafter/releases)
 
-## Use it in 3 steps
+## Use it in 4 steps
 
 ### 1. Download
 Click the file for your device in the table above.
@@ -58,8 +57,10 @@ Open the APK file and tap **Install**.
 - **.deb:** double-click it to open your software installer, or run:
   `sudo apt install ./Daftar-Linux-amd64.deb`
 
-### 3. Write it down
-- Switch to English if you like (see the note at the top).
+### 3. Choose
+The first time you open the app it asks for your **language**, **calendar** and **currency**. Pick them and tap **Start**.
+
+### 4. Write it down
 - Tap the purple **"+"** button (on a computer: **"+ New transaction"**).
 - Pick **Expense** (red) or **Income** (green).
 - Type the **amount**.
@@ -71,7 +72,9 @@ Open the APK file and tap **Install**.
 ## What it does
 
 - Log daily income and expenses
-- **English** and **Persian**, with the **Gregorian** or **Persian (Jalali)** calendar
+- **English** and **Persian** interface
+- **Gregorian** or **Persian (Jalali)** calendar, independent of the language
+- Any currency: US dollar, euro, pound, toman, rial and more, or your own label; amounts with cents where the currency uses them
 - **Categories** with your own icons and colors
 - Daily and monthly **charts**, plus a yearly report
 - **Search** and filter your transactions
@@ -92,9 +95,9 @@ Open the APK file and tap **Install**.
 
 ## FAQ
 
-**How do I change the language or the calendar?**
-On a computer, click **EN** / **فا** at the bottom of the sidebar. On a phone, go to **Settings → Language · زبان**.
-The calendar follows the language (English: Gregorian, Persian: Jalali). To use the other calendar, change **Settings → Calendar**.
+**How do I change the language, calendar or currency?**
+They're all in **Settings**. On a computer you can also switch the language with the **EN** / **فا** button at the bottom of the sidebar.
+The three are independent; for example, you can use English with the Persian calendar.
 
 **Where is my data saved?**
 Only on your own device. On a computer, **Settings → Open folder** shows the folder.
@@ -148,6 +151,11 @@ npm run build    # build the desktop app
 
 Publishing a GitHub release builds every platform automatically and attaches the files.
 Building locally, Android and signing are covered in [docs/BUILD.md](docs/BUILD.md).
+
+## Security and changes
+
+- The app never sends anything over the internet. To report a security problem, see [SECURITY.md](SECURITY.md).
+- What changed in each version: [CHANGELOG.md](CHANGELOG.md)
 
 ## Credits
 
