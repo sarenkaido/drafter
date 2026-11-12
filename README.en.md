@@ -6,14 +6,11 @@
 
 [فارسی](README.md) | **English**
 
-**A simple income & expense notebook for Windows**
+**A simple income & expense notebook for Windows, Android and Linux**
 
 See how much money came in and how much went out. That's it.
 
-<img src="docs/screenshot-dark.png" alt="Daftar screenshot" width="820">
-
-[Download the installer](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Setup-1.0.0.exe) &nbsp;·&nbsp;
-[Download the portable version](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Portable-1.0.0.exe)
+<img src="docs/screenshot-dark.png" alt="Daftar on desktop" height="360">&nbsp;&nbsp;<img src="docs/screenshot-mobile.png" alt="Daftar on Android" height="360">
 
 </div>
 
@@ -21,25 +18,50 @@ See how much money came in and how much went out. That's it.
 
 ---
 
+## Download
+
+| Device | File | Size |
+|---|---|---|
+| Windows | [Installer](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Windows-Setup.exe) | ~1.5 MB |
+| Windows (no install) | [Portable](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Windows-Portable.exe) | ~1.5 MB |
+| Android | [APK](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Android.apk) | |
+| Linux (any distro) | [AppImage](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Linux-x86_64.AppImage) | ~80 MB |
+| Linux (Ubuntu / Debian) | [.deb](https://github.com/sarenkaido/drafter/releases/latest/download/Daftar-Linux-amd64.deb) | ~2 MB |
+
+All versions: [Releases page](https://github.com/sarenkaido/drafter/releases)
+
 ## Use it in 3 steps
 
 ### 1. Download
-Click **"Download the installer"** at the top of this page.
-It's only about 1.5 MB.
+Click the file for your device in the table above.
 
 ### 2. Install
-**Double-click** the downloaded file, then click **Next → Next → Finish**.
+
+**Windows:**
+**Double-click** the file, then click **Next → Next → Finish**.
 A **Daftar** icon appears on your desktop.
 
 > If Windows shows a blue screen saying "Windows protected your PC",
-> click **More info**, then **Run anyway**. Windows shows this for most new apps.
+> click **More info**, then **Run anyway**.
+
+**Android:**
+Open the APK file and tap **Install**.
+
+> If your phone says installing from this source isn't allowed, tap **Settings**,
+> turn on **Allow from this source**, then go back and tap **Install**.
+> If Play Protect shows a warning, tap **More details → Install anyway**.
+
+**Linux:**
+- **AppImage:** right-click the file, open **Properties**, turn on **Allow executing as program**, then double-click it.
+- **.deb:** double-click it to open your software installer, or run:
+  `sudo apt install ./Daftar-Linux-amd64.deb`
 
 ### 3. Write it down
-- Click the purple **"+ تراکنش جدید"** (New transaction) button.
+- Tap the purple **"+"** button (on a computer: **"+ تراکنش جدید"**, New transaction).
 - Pick **هزینه** (expense, red) or **درآمد** (income, green).
 - Type the **amount**.
 - Pick a **category**, for example Groceries.
-- Click **ذخیره** (Save). Done!
+- Tap **ذخیره** (Save). Done!
 
 ---
 
@@ -55,7 +77,7 @@ A **Daftar** icon appears on your desktop.
 - **Dark** and **light** themes
 - Fully **offline**: nothing is ever sent to the internet
 
-## Keyboard shortcuts
+## Keyboard shortcuts (computer)
 
 | Key | Action |
 |---|---|
@@ -67,18 +89,22 @@ A **Daftar** icon appears on your desktop.
 ## FAQ
 
 **Where is my data saved?**
-Only on your own computer. In the app, go to **Settings → Open folder** (تنظیمات ← باز کردن پوشه).
+Only on your own device. On a computer, **Settings → Open folder** (تنظیمات ← باز کردن پوشه) shows the folder.
 
-**How do I move my data to another laptop?**
-On the old laptop, go to **Settings → Full backup export** (تنظیمات ← خروجی پشتیبان کامل).
-Copy the file to the new laptop and use **Settings → Import from file** (تنظیمات ← ورود از فایل).
+**How do I move my data to another device (for example, from a laptop to a phone)?**
+On the old device, go to **Settings → Full backup export** (تنظیمات ← خروجی پشتیبان کامل).
+Send the file to the new device and use **Settings → Import from file** (تنظیمات ← ورود از فایل).
+This works between Windows, Android and Linux too.
 
-**I see "Could not find the WebView2 Runtime".**
-Open [this link](https://go.microsoft.com/fwlink/p/?LinkId=2124703), install the small app it downloads, then open Daftar again.
-(It is usually already installed on Windows 10 and 11.)
+**A new version is out. Will I lose my data?**
+No. Install the new version over the old one and your data stays.
 
 **Will uninstalling delete my data?**
-No. Your data stays, so it comes back if you install again.
+Not on Windows or Linux. On Android, uninstalling the app also deletes its data, so export a full backup first.
+
+**Windows says "Could not find the WebView2 Runtime".**
+Open [this link](https://go.microsoft.com/fwlink/p/?LinkId=2124703), install the small app it downloads, then open Daftar again.
+(It is usually already installed on Windows 10 and 11.)
 
 **What should a CSV file for import look like?**
 These columns are enough, in any order. Persian or English headers both work:
@@ -94,25 +120,25 @@ Dates can be Persian (`1405/08/10`) or Gregorian (`2026-11-01`).
 
 ## For developers
 
-Built with [Tauri 2](https://tauri.app) (Rust) and plain HTML/CSS/JS. There's no framework and no build step for the UI.
+Built with [Tauri 2](https://tauri.app) (Rust) and plain HTML/CSS/JS. There's no framework and no build step for the UI. The same code runs on Windows, Linux and Android.
 
 ```
-ui/          the app UI (HTML, CSS, JS, font)
+ui/          the app UI (HTML, CSS, JS, font), responsive for phones
 src-tauri/   Rust backend: saves data, file dialogs, backups
-installer/   NSIS scripts for the setup and portable .exe
-scripts/     cargo config for cross-compiling from Linux
+installer/   NSIS scripts for the Windows setup and portable .exe
+scripts/     cargo config for cross-compiling Windows builds from Linux
 ```
 
-Quick start on Windows (needs [Node.js](https://nodejs.org) and [Rust](https://rustup.rs)):
+Quick start (needs [Node.js](https://nodejs.org) and [Rust](https://rustup.rs)):
 
 ```bash
 npm install
-npm run dev      # run with live reload
-npm run build    # build src-tauri/target/release/Daftar.exe
+npm run dev      # run on your computer with live reload
+npm run build    # build the desktop app
 ```
 
-Publishing a GitHub release builds both installers automatically and attaches them to the release.
-Building the installers yourself and cross-compiling from Linux are covered in [docs/BUILD.md](docs/BUILD.md).
+Publishing a GitHub release builds every platform automatically and attaches the files.
+Building locally, Android and signing are covered in [docs/BUILD.md](docs/BUILD.md).
 
 ## Credits
 
