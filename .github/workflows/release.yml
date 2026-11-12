@@ -125,6 +125,7 @@ jobs:
             # tolerate stray spaces/newlines and invisible characters (e.g. RTL marks) from copy-paste
             printf '%s' "$KS_B64" | LC_ALL=C tr -cd 'A-Za-z0-9+/=' | base64 -d > ks.jks
             KS_PASS=$(printf '%s' "$KS_PASS" | LC_ALL=C tr -cd '\041-\176')
+            echo "keystore: $(stat -c %s ks.jks) bytes, password: ${#KS_PASS} characters"
             SIGNED=true
           else
             echo "::warning::ANDROID_KEYSTORE secret is missing - signing with a throwaway test key (not published)"
