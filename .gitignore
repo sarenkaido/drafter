@@ -1,0 +1,21 @@
+# dependencies & build output
+node_modules/
+src-tauri/target/
+src-tauri/gen/
+dist-win/
+*.exe
+*.dll
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# never commit secrets
+.env
+.env.*
+*.pfx
+*.p12
+*.pem
+*.key
