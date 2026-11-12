@@ -6,6 +6,10 @@
 - [Rust](https://rustup.rs) (stable)
 - [NSIS](https://nsis.sourceforge.io) 3.x, only for building the installers
 
+## Automatic release builds
+
+Publishing a release on GitHub runs `.github/workflows/release.yml`. It builds the app on a Windows runner, creates both installers and attaches them to the release. To rebuild the files for an existing release, open **Actions → Build & attach installers → Run workflow** and enter the tag.
+
 ## On Windows
 
 ```bash
@@ -27,7 +31,7 @@ makensis setup.nsi       # -> Daftar-Setup-<version>.exe
 makensis portable.nsi    # -> Daftar-Portable-<version>.exe
 ```
 
-If you build with MSVC (no `WebView2Loader.dll`), remove the `WebView2Loader.dll` lines from both `.nsi` files.
+The scripts include `WebView2Loader.dll` only when it is present in `dist-win/` (GNU builds), so the same scripts work for MSVC and GNU builds. Pass `/DVER=1.2.3` to `makensis` to set the version.
 
 ## Cross-compiling from Linux (x86_64-pc-windows-gnu)
 

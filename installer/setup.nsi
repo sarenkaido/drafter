@@ -8,7 +8,9 @@ SetCompressor /SOLID lzma
 !define APP "Daftar"
 !define APPFA "Daftar"
 !define OLDFA "دفتر دخل و خرج"
-!define VER "1.0.0"
+!ifndef VER
+  !define VER "1.0.0"
+!endif
 !define UNKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP}"
 
 Name "${APPFA}"
@@ -48,7 +50,9 @@ Section "Install"
   RMDir /r "$SMPROGRAMS\${OLDFA}"
   SetOutPath "$INSTDIR"
   File "..\dist-win\${APP}.exe"
-  File "..\dist-win\WebView2Loader.dll"
+  !if /FileExists "../dist-win/WebView2Loader.dll"
+    File "..\dist-win\WebView2Loader.dll"
+  !endif
   File "icon.ico"
   WriteUninstaller "$INSTDIR\Uninstall.exe"
   CreateShortcut "$DESKTOP\${APPFA}.lnk" "$INSTDIR\${APP}.exe" "" "$INSTDIR\icon.ico"

@@ -4,7 +4,9 @@ SetCompressor /SOLID lzma
 !include "LogicLib.nsh"
 !include "common.nsh"
 !define APP "Daftar"
-!define VER "1.0.0"
+!ifndef VER
+  !define VER "1.0.0"
+!endif
 Name "Daftar"
 OutFile "Daftar-Portable-${VER}.exe"
 Icon "icon.ico"
@@ -23,7 +25,9 @@ Section
   InitPluginsDir
   SetOutPath "$PLUGINSDIR\app"
   File "..\dist-win\${APP}.exe"
-  File "..\dist-win\WebView2Loader.dll"
+  !if /FileExists "../dist-win/WebView2Loader.dll"
+    File "..\dist-win\WebView2Loader.dll"
+  !endif
   ExecWait '"$PLUGINSDIR\app\${APP}.exe"'
   SetOutPath "$TEMP"
 SectionEnd
